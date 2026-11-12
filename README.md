@@ -48,8 +48,31 @@ each other (averaging washes the daily tails out); the differences show
 in the extreme quantiles, where the bootstrap 1% is the fattest. That is
 exactly what the VaR/ES comparison quantifies next.
 
+## Risk: VaR/ES with confidence intervals
+
+`mc/risk.py` prices the tail question: 95%/99% VaR and ES for BTC and a
+50/50 daily-rebalanced BTC-gold portfolio at 1 and 21 days, per model,
+each with a bootstrap CI on the MC estimate (that CI is simulation noise
+only; model risk is the difference between columns). The 1-day story:
+gaussian ES99 5.5% vs bootstrap 8.2% - assuming normality undercounts
+the daily tail by a third. At 21 days the gap compresses (12.2-12.6%
+VaR95 everywhere) because averaging washes the tails out. Full table in
+`report/risk.json`.
+
+## Options: MC vs Black-Scholes + variance reduction
+
+`mc/options.py` prices an ATM 30-day BTC call (risk-neutral drift = the
+`--rate` assumption, default 4%, never the historical drift) against the
+Black-Scholes closed form the same assumptions give, then measures how
+much antithetic sampling and a control variate on the discounted
+terminal price cut the MC error. On this contract antithetic alone
+changes nothing; the control variate cuts the standard error ~2.3x
+(~5x less variance) - the convergence plot shows it cleanly.
+
 ## Roadmap
 
-VaR/ES with confidence intervals per model, European option MC vs
-Black-Scholes, variance reduction (antithetic, control variates),
-convergence plots.
+Done: data, diagnostics, correlated simulation, VaR/ES with CIs,
+European option MC vs BS with variance reduction and convergence plots.
+Maybe later: path-dependent payoffs (Asian/barrier) where no closed
+form exists, multivariate t-copula calibration, GARCH-filtered bootstrap
+for the vol clustering the diagnostics show.
